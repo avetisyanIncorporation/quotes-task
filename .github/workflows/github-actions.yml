@@ -1,0 +1,53 @@
+name: GitHub Actions
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  init-backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [ 17 ]
+    services:
+      postgres-db:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: quotes_db
+          POSTGRES_PORT: 5432
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots package
+        env:
+          PG_HOST: postgres-db
+          PG_USER: postgres
+          PG_DATABASE: quotes_db
+          PG_PASSWORD: password
+          PG_PORT: ${{ job.services.postgres.ports['5432'] }}
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/quotes_db
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build & push Docker image
+        with:
+          image: avetisyanincorporation/quotes-app-java-hub
+          tags: latest
+          registry: docker.io
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
