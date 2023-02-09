@@ -35,3 +35,5 @@ Docker-hub: https://hub.docker.com/r/avetisyanincorporation/quotes-app-java-hub/
 6) create schema quotes;                   - создать схему в БД
 
 Работа заняла 6 часов
+
+Автоматическая сборка и публикация на docker-hub реализовано через Github Actions (вкладка Actions)
