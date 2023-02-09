@@ -1,6 +1,7 @@
 # quotes task
 
 База данных (PostgreSQL), Миграции (Liquibase)
+
 ![db](https://user-images.githubusercontent.com/29467133/217855795-acc435fe-70f4-4320-99c0-a7fd0f0284a1.PNG)
 
 API:
